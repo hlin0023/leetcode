@@ -1,0 +1,65 @@
+"""
+match('a', 'a') = True
+match('aa', 'a') = False
+match('a', '?') = True
+match('aa', '*') = True
+match('abc', '?*') = True
+"""
+
+def is_match(s, p):
+    dp = [[False] * (len(p) + 1) for _ in range(len(s) + 1)]
+    dp[0][0] = True
+    print(dp)
+    
+    for j in range(1, len(p) + 1):
+        if p[j - 1] == '*':
+            dp[0][j] = dp[0][j - 1]
+            print(j, dp)
+
+    for i in range(1, len(s) + 1):
+        for j in range(1, len(p) + 1):
+            if p[j - 1] == s[i - 1] or p[j - 1] == '?':
+                dp[i][j] = dp[i - 1][j - 1]
+            elif p[j - 1] == '*':
+                print((i,j), dp[i][j], dp[i][j - 1], dp[i - 1][j])
+                dp[i][j] = dp[i][j - 1] or dp[i - 1][j]
+    print(dp)
+    return dp[len(s)][len(p)]
+
+
+def checker(i, j):
+    if i == j: 
+        return True
+    elif j == "?": 
+        return True
+    elif j == "*": 
+        return True
+    else : 
+        return False
+    
+def is_match_one(s, p):
+    if len(s) > len(p) and "*" not in p:
+        return False
+
+    memo = [[False] * (len(p)) for _ in range(len(s))]
+    for i in range(1,len(s)+1):
+        for j in range(1,len(p)+1):
+            memo[i-1][j-1] = checker(s[i-1], p[j-1])
+            if p[j - 1] == "*":
+                memo[i-1][j-1] =  memo[i-1][j-1] or memo[i - 1][j]
+    print(memo)
+
+    results = True
+
+    for r in memo[-1]:
+        results = results and r
+    return results
+
+
+
+# # 示例用法
+# print(is_match('a', 'a'))      # 输出 True
+# print(is_match('aa', 'a'))     # 输出 False
+# print(is_match('a', '?'))      # 输出 True
+# print(is_match('aa', '*'))     # 输出 True
+print(is_match_one('abbc', 'a*c'))   # 输出 True
